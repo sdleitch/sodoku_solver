@@ -16,41 +16,47 @@ SODOKU =
 # end
 
 # Find possible numbers for cell
-def find_possible_cell_numbers(row, col)
-  possible_nums = []
+def find_used_cell_numbers(row, col)
+  used_nums = []
+  used_nums << find_row_numbers(row)
+  used_nums << find_col_numbers(col)
+  used_nums << find_box_numbers(row, col)
+  used_nums.flatten!.uniq!
+
+  return used_nums
 end
 
 # Returns possible answers in a row.
-def find_possible_row_numbers(row)
-  possible_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  row.each do |cell|
-    possible_nums.include?(cell) ? possible_nums.delete(cell) : nil
+def find_row_numbers(row)
+  used_nums = []
+  SODOKU[row].each do |cell|
+    cell != 0 ? used_nums << cell : nil
   end
-  return possible_nums
+  return used_nums
 end
 
 # Returns possible answers in a col.
-def find_possible_col_numbers(col)
-  possible_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  i = 0
+def find_col_numbers(col)
+  used_nums = []
+  row = 0
   SODOKU.length.times do
-    possible_nums.include?(SODOKU[i][col]) ? possible_nums.delete(SODOKU[i][col]) : nil
-    i += 1
+    SODOKU[row][col] != 0 ? used_nums << SODOKU[row][col] : nil
+    row += 1
   end
-  return possible_nums
+  return used_nums
 end
 
 # Return possible numbers from box
-def find_possible_box_numbers(row, col)
-  possible_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+def find_box_numbers(row, col)
+  used_nums = []
 
   row_box = (row / 3) * 3
   col_box = (col / 3) * 3
 
   (row_box..row_box + 2).each do |row|
     (col_box..col_box + 2).each do |col|
-      possible_nums.include?(SODOKU[row][col]) ? possible_nums.delete(SODOKU[row][col]) : nil
+      SODOKU[row][col] != 0 ? used_nums << SODOKU[row][col] : nil
     end
   end
-  return possible_nums
+  return used_nums
 end
