@@ -11,26 +11,50 @@ SODOKU =
     [0, 4, 0, 5, 0, 8, 0, 7, 0],
   ]
 
-# def solve_sodoku(sodoku)
-  # Methods will go here
-# end
+def solve_sodoku(sodoku)
+  2.times do
+    sodoku.each do |r|
+      row = sodoku.index(r)
+      r.each do |cell|
+        col = sodoku[row].index(cell)
+        if cell.class == Array && cell.length > 1
+          remove_identical_array_numbers(row, col)
+        elsif cell.class == Array && cell.length == 1
+          sodoku[row][col] = cell[0]
+        elsif cell == 0
+          possible_nums = find_possible_cell_numbers(row, col)
+          sodoku[row][col] = possible_nums
+        end
+      end
+      p r
+    end
+  end
+end
 
 # Find possible numbers for cell
-def find_used_cell_numbers(row, col)
+def find_possible_cell_numbers(row, col)
+  possible_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
   used_nums = []
   used_nums << find_row_numbers(row)
   used_nums << find_col_numbers(col)
   used_nums << find_box_numbers(row, col)
   used_nums.flatten!.uniq!
 
-  return used_nums
+  used_nums.each { |num| possible_nums.include?(num) ? possible_nums.delete(num) : nil }
+
+  return possible_nums
 end
 
 # Returns possible answers in a row.
 def find_row_numbers(row)
   used_nums = []
   SODOKU[row].each do |cell|
-    cell != 0 ? used_nums << cell : nil
+    if cell != 0 && cell.class == Fixnum
+      used_nums << cell
+    elsif cell.class == Array
+      # p "PROC"
+    end
   end
   return used_nums
 end
@@ -40,7 +64,10 @@ def find_col_numbers(col)
   used_nums = []
   row = 0
   SODOKU.length.times do
-    SODOKU[row][col] != 0 ? used_nums << SODOKU[row][col] : nil
+    cell = SODOKU[row][col]
+    if cell != 0 && cell.class == Fixnum
+      used_nums << cell
+    end
     row += 1
   end
   return used_nums
@@ -55,8 +82,92 @@ def find_box_numbers(row, col)
 
   (row_box..row_box + 2).each do |row|
     (col_box..col_box + 2).each do |col|
-      SODOKU[row][col] != 0 ? used_nums << SODOKU[row][col] : nil
+      cell = SODOKU[row][col]
+      if cell != 0 && cell.class == Fixnum
+        used_nums << cell
+      end
     end
   end
   return used_nums
+end
+
+def remove_identical_array_numbers(row, col)
+  cell = SODOKU[row][col]
+  compare_row_arrays(row, col, cell)
+  compare_col_arrays(col, cell)
+  compare_box_arrays(row, col, cell)
+end
+
+def compare_row_arrays(row, col, cell)
+  number_indentical_cells = 0
+  SODOKU[row].each do |compare_cell|
+    if compare_cell == cell
+      number_indentical_cells += 1
+    end
+  end
+
+  if cell.length == number_indentical_cells
+    SODOKU[row].map! do |compare_cell|
+      if compare_cell.class == Array && (cell & compare_cell).any? && compare_cell != cell
+        compare_cell -= cell
+      else
+        compare_cell = compare_cell
+      end
+    end
+  end
+
+end
+
+def compare_col_arrays(col, cell)
+  number_indentical_cells = 0
+  SODOKU.each do
+    row = 0
+    compare_cell = SODOKU[row][col]
+    if compare_cell == cell
+      number_indentical_cells += 1
+    end
+    row += 1
+  end
+
+  if cell.length == number_indentical_cells
+    SODOKU.map! do |row|
+      compare_cell = SODOKU[row][col]
+      if compare_cell.class == Array && (cell & compare_cell).any? && compare_cell != cell
+        compare_cell -= cell
+      else
+        compare_cell = compare_cell
+      end
+    end
+  end
+
+end
+
+def compare_box_arrays(row, col, cell)
+  number_indentical_cells = 0
+
+  row_box = (row / 3) * 3
+  col_box = (col / 3) * 3
+
+  (row_box..row_box + 2).each do |row|
+    (col_box..col_box + 2).each do |col|
+      compare_cell = SODOKU[row][col]
+      if compare_cell == cell
+        number_indentical_cells += 1
+      end
+    end
+  end
+
+  if cell.length == number_indentical_cells
+    (row_box..row_box + 2).each do |row|
+      (col_box..col_box + 2).each do |col|
+        compare_cell = SODOKU[row][col]
+        if compare_cell.class == Array && (cell & compare_cell).any? && compare_cell != cell
+          SODOKU[row][col] -= cell
+        else
+          SODOKU[row][col] = compare_cell
+        end
+      end
+    end
+  end
+
 end
