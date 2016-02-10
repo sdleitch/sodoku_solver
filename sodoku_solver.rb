@@ -12,23 +12,56 @@ SODOKU =
   ]
 
 def solve_sodoku(sodoku)
-  2.times do
+  prev_length = nil
+  sodoku_length = SODOKU.flatten.length
+
+  until sodoku_length == prev_length
+    prev_length = sodoku_length
+
     sodoku.each do |r|
       row = sodoku.index(r)
       r.each do |cell|
         col = sodoku[row].index(cell)
-        if cell.class == Array && cell.length > 1
-          remove_identical_array_numbers(row, col)
-        elsif cell.class == Array && cell.length == 1
-          sodoku[row][col] = cell[0]
-        elsif cell == 0
+        if cell == 0
           possible_nums = find_possible_cell_numbers(row, col)
           sodoku[row][col] = possible_nums
+        elsif cell.class == Array && cell.length > 1
+          remove_identical_array_numbers(row, col)
+          check_if_unique(row, col, cell)
+        elsif cell.class == Array && cell.length == 1
+          sodoku[row][col] = cell[0]
         end
       end
-      p r
+      # p r
     end
+    sodoku_length = SODOKU.flatten.length
   end
+
+  until sodoku_length == 81
+    sodoku.each do |r|
+      row = sodoku.index(r)
+      r.each do |cell|
+        col = sodoku[row].index(cell)
+
+        if cell.class == Array && cell.length > 1
+          possible_nums = find_possible_cell_numbers(row, col)
+          sodoku[row][col] = possible_nums
+        elsif cell.class == Array && cell.length == 1
+          sodoku[row][col] = cell[0]
+        end
+      end
+      # p r
+    end
+    sodoku_length = SODOKU.flatten.length
+  end
+
+  puts "Your sodouku result is: \n\n"
+
+  sodoku.each do |row|
+    row.flatten!
+    p row
+  end
+
 end
 
 # Find possible numbers for cell
@@ -91,6 +124,7 @@ def find_box_numbers(row, col)
   return used_nums
 end
 
+# If there are identical arrays, remove their values from other arrays in row, col, box
 def remove_identical_array_numbers(row, col)
   cell = SODOKU[row][col]
   compare_row_arrays(row, col, cell)
@@ -98,6 +132,7 @@ def remove_identical_array_numbers(row, col)
   compare_box_arrays(row, col, cell)
 end
 
+# Remove values from rows
 def compare_row_arrays(row, col, cell)
   number_indentical_cells = 0
   SODOKU[row].each do |compare_cell|
@@ -118,6 +153,7 @@ def compare_row_arrays(row, col, cell)
 
 end
 
+# Remove values from columns
 def compare_col_arrays(col, cell)
   number_indentical_cells = 0
   SODOKU.each do
@@ -141,6 +177,8 @@ def compare_col_arrays(col, cell)
   end
 
 end
+
+# Remove values from boxes
 
 def compare_box_arrays(row, col, cell)
   number_indentical_cells = 0
@@ -170,4 +208,26 @@ def compare_box_arrays(row, col, cell)
     end
   end
 
+end
+
+def check_if_unique(row, col, cell)
+  cell.each do |n|
+    all_row_nums = SODOKU[row].flatten
+
+    row_duplicates = all_row_nums.select { |element| all_row_nums.count(element) > 1 }
+    if !row_duplicates.include?(n)
+      SODOKU[row][col] = n
+      break
+    end
+
+    all_col_nums = []
+    SODOKU.each { |r| all_col_nums << r[col] }
+    all_col_nums.flatten!
+
+    col_duplicates = all_col_nums.select { |element| all_col_nums.count(element) > 1 }
+    if !col_duplicates.include?(n)
+      SODOKU[row][col] = n
+      break
+    end
+  end
 end
