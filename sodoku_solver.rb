@@ -1,15 +1,4 @@
-SODOKU =
-  [
-    [0, 6, 0, 1, 0, 4, 0, 5, 0],
-    [0, 0, 8, 3, 0, 5, 6, 0, 0],
-    [2, 0, 0, 0, 0, 0, 0, 0, 1],
-    [8, 0, 0, 4, 0, 7, 0, 0, 6],
-    [0, 0, 6, 0, 0, 0, 3, 0, 0],
-    [7, 0, 0, 9, 0, 1, 0, 0, 4],
-    [5, 0, 0, 0, 0, 0, 0, 0, 2],
-    [0, 0, 7, 2, 0, 6, 9, 0, 0],
-    [0, 4, 0, 5, 0, 8, 0, 7, 0],
-  ]
+require_relative 'input.rb'
 
 def solve_sodoku(sodoku)
   prev_length = nil
@@ -58,8 +47,7 @@ def solve_sodoku(sodoku)
   puts "Your sodouku result is: \n\n"
 
   sodoku.each do |row|
-    row.flatten!
-    p row
+    p row.flatten
   end
 
 end
@@ -231,3 +219,5 @@ def check_if_unique(row, col, cell)
     end
   end
 end
+
+solve_sodoku(SODOKU)
