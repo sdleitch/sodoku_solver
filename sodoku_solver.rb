@@ -9,9 +9,9 @@ def solve_sodoku(sodoku)
   end
 
   # sodoku_copy = Marshal.load(Marshal.dump(sodoku))
-  if sodoku.flatten.length != 81
-    recursive_solve(sodoku, 0, 0)
-  end
+  # if sodoku.flatten.length != 81
+  #   recursive_solve(sodoku, 0, 0)
+  # end
 
   puts "Your sodoku result is: \n\n"
 
@@ -244,34 +244,10 @@ def check_if_unique(row, col, cell, sodoku)
   end
 end
 
-def recursive_solve(sodoku, row, col)
-  nums = sodoku[row][col]
-  until row > sodoku.length
-    puts 'here'
-    if nums.class == Array
-
-      num.each do |num|
-        sodoku[row][col] = num
-
-        if col == 8
-          col = 0
-          row += 1
-          recursive_solve(sodoku, row, col)
-        else
-          col += 1
-          recursive_solve(sodoku, row, col)
-        end
-      end
-    else
-      if col == 8
-        col = 0
-        row += 1
-      else
-        col += 1
-      end
-    end
-
-  end
-end
+# def recursive_solve(sodoku, row, col)
+#
+#
+#
+# end
 
 # solve_sodoku(SODOKU)
