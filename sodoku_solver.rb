@@ -8,10 +8,15 @@ def solve_sodoku(sodoku)
     sodoku = solve_cells(sodoku)
   end
 
-  # sodoku_copy = Marshal.load(Marshal.dump(sodoku))
-  # if sodoku.flatten.length != 81
-  #   recursive_solve(sodoku, 0, 0)
-  # end
+
+  if sodoku.flatten.length > 81
+    sodoku.each do |row|
+      (0..8).each do |col|
+        row[col] = 0 if row[col].class == Array
+      end
+    end
+    recursive_solve(sodoku, 0, 0)
+  end
 
   puts "Your sodoku result is: \n\n"
 
@@ -244,10 +249,41 @@ def check_if_unique(row, col, cell, sodoku)
   end
 end
 
-# def recursive_solve(sodoku, row, col)
-#
-#
-#
-# end
+def recursive_solve(sodoku, row, col)
 
-# solve_sodoku(SODOKU)
+  if row == 9
+    return true
+  end
+
+  nums = sodoku[row][col]
+
+  if nums != 0 #.class != Array
+    puts "SOLVED: #{nums}"
+    if col == 8
+      return true if recursive_solve(sodoku, row + 1, 0)
+    else
+      return true if recursive_solve(sodoku, row, col + 1)
+    end
+
+    return false
+  end
+
+  for num in (1..9)
+    # puts "NEXT NUM: " + num.to_s
+    if find_possible_cell_numbers(row, col, sodoku).include?(num)
+      sodoku[row][col] = num
+
+      if col == 8
+        return true if recursive_solve(sodoku, row + 1, 0)
+      else
+        return true if recursive_solve(sodoku, row, col + 1)
+        end
+    end
+    sodoku[row][col] = nums
+    puts "row: #{row}, col #{col}, num: #{num}"
+  end
+
+  return false
+end
+
+solve_sodoku(SODOKU)
